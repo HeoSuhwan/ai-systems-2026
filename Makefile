@@ -4,7 +4,7 @@
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
-NPM         := npm
+NPM         := pnpm
 ASTRO       := $(NPM) run astro --
 CONTENT_DIR := src/content/docs
 
@@ -16,10 +16,10 @@ help: ## Show this help message
 
 # ── Dependencies ─────────────────────────────────────────────────────────────
 
-install: ## Install dependencies (npm ci)
-	$(NPM) ci
+install: ## Install dependencies (pnpm install --frozen-lockfile)
+	$(NPM) install --frozen-lockfile
 
-install-dev: ## Install dependencies (npm install, updates lock file)
+install-dev: ## Install dependencies (pnpm install, updates lock file)
 	$(NPM) install
 
 # ── Development ──────────────────────────────────────────────────────────────

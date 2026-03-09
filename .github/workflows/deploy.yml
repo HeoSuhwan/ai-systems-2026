@@ -24,14 +24,17 @@ jobs:
         with:
           fetch-depth: 0  # 전체 히스토리 — lastUpdated 기능에 필수
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Pages
         id: pages
@@ -40,7 +43,7 @@ jobs:
           enablement: true
 
       - name: Build with Astro
-        run: npm run build
+        run: pnpm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
