@@ -4,12 +4,12 @@ description: MCP 서버 설정, 파일시스템+Git 서버 구성, 커스텀 MCP
 week: 3
 difficulty: 초급
 estimated_time: 5시간
-assignment_due: "2026-03-25"
+assignment_due: "2026-03-24"
 ---
 
 import { Steps, Aside, Tabs, TabItem, Badge } from '@astrojs/starlight/components';
 
-<Badge text="초급" variant="caution" /> <Badge text="마감: 2026-03-25" variant="note" />
+<Badge text="초급" variant="caution" /> <Badge text="마감: 2026-03-24" variant="note" />
 
 ## 목표
 
@@ -21,9 +21,25 @@ import { Steps, Aside, Tabs, TabItem, Badge } from '@astrojs/starlight/component
 
 MCP는 AI 코딩 에이전트가 외부 도구·데이터 소스와 표준화된 방식으로 통신하는 프로토콜이다. MCP를 지원하는 CLI 도구는 설정 파일에 MCP 서버를 등록하여 사용한다.
 
-```
-AI 코딩 에이전트  ←→  MCP 클라이언트  ←→  MCP 서버  ←→  파일시스템 / Git / 커스텀 API
-```
+<div class="diagram">
+  <div class="diagram__chain">
+    <div class="diagram__node diagram__node--blue">
+      <span class="diagram__node__label">AI 코딩 에이전트</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--purple">
+      <span class="diagram__node__label">MCP 클라이언트</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--cyan">
+      <span class="diagram__node__label">MCP 서버</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--orange">
+      <span class="diagram__node__label">파일시스템 / Git / 커스텀 API</span>
+    </div>
+  </div>
+</div>
 
 <Aside type="caution" title="MCP 지원 현황">
 - **Claude Code**: 완전 지원 (`~/.claude/settings.json`)

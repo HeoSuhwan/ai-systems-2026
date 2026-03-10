@@ -23,9 +23,19 @@ claude --file=PROMPT.md
 cat PROMPT.md | claude --headless
 ```
 
+```bash
+# /loop — 스케줄 기반 자율 에이전트 루프
+claude /loop "failing tests를 찾아 수정" --every 2h --for 3d
+
+# 루프 상태 확인 / 중지
+claude /loop --status
+claude /loop --stop
+```
+
 **주요 기능**:
 - MCP 서버 통합 (`~/.claude/settings.json`)
 - `CLAUDE.md` 프로젝트별 지침 파일
+- `/loop` 스케줄 기반 자율 루프 (git worktree 격리, 최대 3일)
 - 멀티파일 편집
 - GitHub Actions 통합
 

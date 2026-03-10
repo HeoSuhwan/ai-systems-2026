@@ -4,7 +4,7 @@ description: NVIDIA Multi-Instance GPU 기술과 Model Context Protocol 연동
 week: 3
 phase: 1
 phase_title: 에이전틱 시스템 기초
-date: "2026-03-18"
+date: "2026-03-17"
 theory_topics:
   - NVIDIA MIG (Multi-Instance GPU) 기술 원리
   - Kubernetes 오케스트레이션
@@ -13,7 +13,7 @@ lab_topics:
   - MCP 서버 구성
   - DGX 클러스터 접속 및 MIG 슬라이스 할당
 assignment: "Lab 03: MCP 서버 구성"
-assignment_due: "2026-03-25"
+assignment_due: "2026-03-24"
 difficulty: 초급
 estimated_time: 5시간
 ---
@@ -32,33 +32,61 @@ import { Aside, Steps, Tabs, TabItem, Badge } from '@astrojs/starlight/component
 
 NVIDIA H100 GPU는 MIG 기술로 최대 **7개의 독립 인스턴스**로 분할 가능하다. 각 인스턴스는 하드웨어 수준의 완전한 격리를 제공한다.
 
-```
-DGX H100 (80GB HBM3)
-├── MIG 1g.10gb × 7 (각 학생 1개 할당)
-│   ├── L2 캐시 독립
-│   ├── 메모리 컨트롤러 분리
-│   └── DRAM 주소 버스 격리
-└── 시간 슬라이싱 없음 → 예측 가능한 지연시간
-```
+<div class="diagram">
+  <div class="diagram__title">DGX H100 MIG ARCHITECTURE</div>
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--blue diagram__node--wide">
+      <span class="diagram__node__label">DGX H100 (80GB HBM3)</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--cyan diagram__node--wide">
+      <span class="diagram__node__label">MIG 1g.10gb × 7</span>
+      <span class="diagram__node__sub">각 학생 1개 할당</span>
+      <ul>
+        <li>L2 캐시 독립</li>
+        <li>메모리 컨트롤러 분리</li>
+        <li>DRAM 주소 버스 격리</li>
+      </ul>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--green">
+      <span class="diagram__node__label">시간 슬라이싱 없음</span>
+      <span class="diagram__node__sub">예측 가능한 지연시간</span>
+    </div>
+  </div>
+</div>
 
 <Aside type="tip" title="MIG vs 시간 슬라이싱">
 기존 시간 슬라이싱: 학생 A의 OOM 오류가 학생 B의 워크로드에 영향을 줄 수 있음.
-MIG: 하드웨어 수준 격리로 완전한 **QoS(Quality of Service) 보장**.
+MIG: 하드웨어 수준 격리로 완전한 **QoS (Quality of Service) 보장**.
 </Aside>
 
 ### Model Context Protocol (MCP)
 
 MCP는 에이전트와 외부 도구를 연결하는 **표준화된 프로토콜**이다. 에이전트마다 도구를 하드코딩하는 대신, MCP 게이트웨이를 통해 동적으로 도구 접근 권한을 관리한다.
 
-```
-Claude Agent
-    ↓ MCP 요청
-MCP Gateway (권한 관리)
-    ├── File System Server → 파일 읽기/쓰기
-    ├── Git Server → 커밋, 브랜치 관리
-    ├── Test Runner Server → pytest 실행
-    └── Database Server → 쿼리 실행 (QA Agent에만 허용)
-```
+<div class="diagram">
+  <div class="diagram__title">MCP GATEWAY ARCHITECTURE</div>
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--blue">
+      <span class="diagram__node__label">Claude Agent</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;<span class="diagram__arrow--label">MCP 요청</span></div>
+    <div class="diagram__node diagram__node--purple diagram__node--wide">
+      <span class="diagram__node__label">MCP Gateway</span>
+      <span class="diagram__node__sub">권한 관리</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--cyan diagram__node--wide">
+      <ul>
+        <li>File System Server — 파일 읽기/쓰기</li>
+        <li>Git Server — 커밋, 브랜치 관리</li>
+        <li>Test Runner Server — pytest 실행</li>
+        <li>Database Server — 쿼리 실행 (QA Agent에만 허용)</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 ### Kubernetes로 MIG 오케스트레이션
 
@@ -153,7 +181,7 @@ spec:
 
 ### Lab 03: MCP 서버 구성
 
-**제출 마감**: 2026-03-25 23:59
+**제출 마감**: 2026-03-24 23:59
 
 **제출 경로**: `assignments/week-03/[학번]/`
 

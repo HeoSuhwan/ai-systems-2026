@@ -4,12 +4,12 @@ description: 5단계 파이프라인 설계, JSON 스키마 정의, Planner→Co
 week: 7
 difficulty: 고급
 estimated_time: 7시간
-assignment_due: "2026-04-22"
+assignment_due: "2026-04-21"
 ---
 
 import { Steps, Aside, Tabs, TabItem, Badge } from '@astrojs/starlight/components';
 
-<Badge text="고급" variant="danger" /> <Badge text="마감: 2026-04-22" variant="note" />
+<Badge text="고급" variant="danger" /> <Badge text="마감: 2026-04-21" variant="note" />
 
 ## 목표
 
@@ -22,20 +22,39 @@ import { Steps, Aside, Tabs, TabItem, Badge } from '@astrojs/starlight/component
 
 단일 에이전트는 복잡한 작업에서 한계를 보인다. 역할 분리를 통해 각 에이전트가 좁고 명확한 책임을 갖도록 하면 품질과 추적성이 높아진다.
 
-```
-사용자 요청
-    │
-    ▼
-[Planner]  ──spec.md──▶  [Researcher]  ──context.json──▶  [Coder]
-                                                               │
-                                                         코드 변경
-                                                               │
-                                          [QA] ◀──────────────┘
-                                           │
-                                      테스트 결과
-                                           │
-                                    [Reviewer] ──▶ 최종 승인/거부
-```
+<div class="diagram">
+  <div class="diagram__title">MULTI-AGENT PIPELINE</div>
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--purple">
+      <span class="diagram__node__label">사용자 요청</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--blue">
+      <span class="diagram__node__label">Planner</span>
+      <span class="diagram__node__sub">spec.md 생성</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--gray">
+      <span class="diagram__node__label">Researcher</span>
+      <span class="diagram__node__sub">context.json 생성</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--cyan">
+      <span class="diagram__node__label">Coder</span>
+      <span class="diagram__node__sub">코드 변경</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--orange">
+      <span class="diagram__node__label">QA</span>
+      <span class="diagram__node__sub">테스트 결과</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--green">
+      <span class="diagram__node__label">Reviewer</span>
+      <span class="diagram__node__sub">최종 승인/거부</span>
+    </div>
+  </div>
+</div>
 
 ## 구현 요구사항
 

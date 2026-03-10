@@ -90,6 +90,9 @@ description: AI 시스템 2026 강의 주요 용어 정의
 **Ralph Loop (Ralph 루프)**
 : Geoffrey Huntley가 2025년 대중화한 에이전틱 개발 방법론. `while :; do cat PROMPT.md | <ai-coding-cli>; done` 형태의 단순 지속 루프. `<ai-coding-cli>`에는 `claude`, `gemini`, `codex` 등을 사용할 수 있다.
 
+**/loop (Claude Code Loop)**
+: Claude Code의 공식 스케줄 기반 자율 에이전트 루프 명령. `claude /loop "<지시>" --every <간격> --for <기간>` 형태로 실행. 매 반복마다 git worktree를 생성하여 격리 실행하고, CLAUDE.md를 다시 읽어 최신 컨텍스트를 반영한다. 최대 3일 만료 — 잊혀진 에이전트의 컨텍스트 드리프트를 방지하기 위한 의도적 설계. Ralph 루프의 범용 패턴을 Claude Code 전용으로 제품화한 것.
+
 **Ralphthon**
 : Ralph 루프 방법론을 중심으로 한 해커톤 형식의 집중 개발 이벤트. 이 강의 캡스톤 프로젝트의 이름.
 

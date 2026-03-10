@@ -4,7 +4,7 @@ description: 독립적 품질 보증 에이전트 — 피드백 루프와 회귀
 week: 9
 phase: 3
 phase_title: 멀티에이전트 SDLC
-date: "2026-04-29"
+date: "2026-04-28"
 theory_topics:
   - QA 에이전트 역할과 독립성 원칙
   - 자동 테스트 파이프라인 설계
@@ -13,7 +13,7 @@ lab_topics:
   - QA 에이전트 구현
   - 코드 리뷰 자동화
 assignment: "Lab 09: QA 에이전트 구현"
-assignment_due: "2026-05-06"
+assignment_due: "2026-05-05"
 difficulty: 고급
 estimated_time: 8시간
 ---
@@ -93,20 +93,32 @@ class QAAgent:
 
 ### 피드백 루프 설계
 
-```
-QA Agent가 실패 감지
-        ↓
-실패 정보 패키징:
-  - 실패한 테스트 케이스
-  - 스택 트레이스
-  - 코드 diff
-        ↓
-Coder Agent에 재할당:
-  task_queue.json에 새 태스크 추가
-  priority: HIGH
-        ↓
-Coder Agent 재실행
-```
+<div class="diagram">
+  <div class="diagram__title">QA FEEDBACK LOOP</div>
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--red">
+      <span class="diagram__node__label">QA Agent 실패 감지</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--orange diagram__node--wide">
+      <span class="diagram__node__label">실패 정보 패키징</span>
+      <ul>
+        <li>실패한 테스트 케이스</li>
+        <li>스택 트레이스</li>
+        <li>코드 diff</li>
+      </ul>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--blue diagram__node--wide">
+      <span class="diagram__node__label">Coder Agent에 재할당</span>
+      <span class="diagram__node__sub">task_queue.json에 새 태스크 추가 (priority: HIGH)</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--cyan">
+      <span class="diagram__node__label">Coder Agent 재실행</span>
+    </div>
+  </div>
+</div>
 
 ## 실습 (Practicum)
 
@@ -126,7 +138,7 @@ Coder Agent 재실행
 
 ### Lab 09: QA 에이전트 구현
 
-**제출 마감**: 2026-05-06 23:59
+**제출 마감**: 2026-05-05 23:59
 
 **요구사항**:
 1. 완전한 `QAAgent` 구현

@@ -4,7 +4,7 @@ description: AI 시스템 패러다임 전환 — HITL에서 HOTL로
 week: 1
 phase: 1
 phase_title: 에이전틱 시스템 기초
-date: "2026-03-04"
+date: "2026-03-03"
 theory_topics:
   - AI 시스템 2026 패러다임 전환 개요
   - Human-in-the-Loop(HITL) vs Human-on-the-Loop(HOTL)
@@ -13,7 +13,7 @@ lab_topics:
   - 개발 환경 설정
   - AI 코딩 CLI 도구 설치 및 첫 실행
 assignment: "Lab 01: 개발 환경 설정"
-assignment_due: "2026-03-11"
+assignment_due: "2026-03-10"
 difficulty: 입문
 estimated_time: 3시간
 ---
@@ -24,7 +24,7 @@ import { Aside, Steps, Tabs, TabItem, Card, CardGrid, Badge } from '@astrojs/sta
   <span class="phase-tag">Phase 1</span>
   <Badge text="1주차" variant="note" />
   <Badge text="입문" variant="success" />
-  <Badge text="강의일: 2026-03-04" variant="default" />
+  <Badge text="강의일: 2026-03-03" variant="default" />
 </div>
 
 ## 이론 (Theory)
@@ -64,17 +64,35 @@ HOTL보다 상위 개념으로, AI가 실행하는 동안 인간이 **전체 전
 
 15주 후, 여러분은 다음 시스템을 완전히 구현하게 된다:
 
-```
-Human (HIC)
-    ↓ 전략 설정
-Planner Agent → 명세서(spec.md) 생성
-    ↓
-Coder Agent (Ralph Loop) → 코드 작성 + 자동 테스트
-    ↓
-QA Agent → 독립 검증 + 회귀 테스트
-    ↓
-Deploy Agent → 자동 배포
-```
+<div class="diagram">
+  <div class="diagram__title">AGENTIC SDLC PIPELINE</div>
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--purple">
+      <span class="diagram__node__label">Human (HIC)</span>
+      <span class="diagram__node__sub">전략 설정</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--blue">
+      <span class="diagram__node__label">Planner Agent</span>
+      <span class="diagram__node__sub">명세서(spec.md) 생성</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--cyan">
+      <span class="diagram__node__label">Coder Agent (Ralph Loop)</span>
+      <span class="diagram__node__sub">코드 작성 + 자동 테스트</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--orange">
+      <span class="diagram__node__label">QA Agent</span>
+      <span class="diagram__node__sub">독립 검증 + 회귀 테스트</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--green">
+      <span class="diagram__node__label">Deploy Agent</span>
+      <span class="diagram__node__sub">자동 배포</span>
+    </div>
+  </div>
+</div>
 
 ## 실습 (Practicum)
 
@@ -213,7 +231,7 @@ AI 코딩 CLI 도구를 설치하고, DGX H100 서버에 접속하여 첫 번째
 
 ### Lab 01: 개발 환경 설정
 
-**제출 마감**: 2026-03-11 23:59
+**제출 마감**: 2026-03-10 23:59
 
 **제출 방법**: `assignments/week-01/[학번]/` 폴더에 PR
 

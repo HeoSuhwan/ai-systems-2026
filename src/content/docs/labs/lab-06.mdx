@@ -4,12 +4,12 @@ description: 반복 오류 패턴 분석, PROMPT.md 고도화, A/B 테스트
 week: 6
 difficulty: 중급
 estimated_time: 4시간
-assignment_due: "2026-04-15"
+assignment_due: "2026-04-14"
 ---
 
 import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
-<Badge text="중급" variant="tip" /> <Badge text="마감: 2026-04-15" variant="note" />
+<Badge text="중급" variant="tip" /> <Badge text="마감: 2026-04-14" variant="note" />
 
 ## 목표
 
@@ -21,9 +21,29 @@ import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
 프롬프트 엔지니어링에서 "튜닝"이란 모델 가중치를 건드리는 것이 아니라, 지시문(PROMPT.md)을 반복적으로 개선해 에이전트의 행동을 원하는 방향으로 조정하는 과정이다. 핵심은 로그 기반의 데이터 드리븐 접근이다.
 
-```
-harness.log 분석 → 오류 패턴 추출 → PROMPT.md 수정 → A/B 테스트 → 반복
-```
+<div class="diagram">
+  <div class="diagram__chain">
+    <div class="diagram__node diagram__node--red">
+      <span class="diagram__node__label">harness.log 분석</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--orange">
+      <span class="diagram__node__label">오류 패턴 추출</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--blue">
+      <span class="diagram__node__label">PROMPT.md 수정</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--cyan">
+      <span class="diagram__node__label">A/B 테스트</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--green">
+      <span class="diagram__node__label">반복</span>
+    </div>
+  </div>
+</div>
 
 ## 구현 요구사항
 

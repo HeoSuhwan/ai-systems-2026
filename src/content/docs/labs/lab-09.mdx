@@ -4,12 +4,12 @@ description: QAAgent 클래스, 자동 코드 리뷰, 피드백 루프, end-to-e
 week: 9
 difficulty: 고급
 estimated_time: 8시간
-assignment_due: "2026-05-06"
+assignment_due: "2026-05-05"
 ---
 
 import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
-<Badge text="고급" variant="danger" /> <Badge text="마감: 2026-05-06" variant="note" />
+<Badge text="고급" variant="danger" /> <Badge text="마감: 2026-05-05" variant="note" />
 
 ## 목표
 
@@ -21,17 +21,36 @@ import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
 QA 에이전트는 코더의 출력을 검증하고 피드백을 제공하는 품질 관문(quality gate)이다.
 
-```
-CoderAgent ──코드변경──▶ QAAgent
-                            ├── pytest 실행
-                            ├── coverage 측정
-                            ├── LLM 코드 리뷰
-                            └── 피드백 판정
-                                  │
-                         통과 ────┴──── 실패 → CoderAgent (재시도)
-                          │
-                     ReviewerAgent
-```
+<div class="diagram">
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--cyan">
+      <span class="diagram__node__label">CoderAgent</span>
+      <span class="diagram__node__sub">코드 변경</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--orange diagram__node--wide">
+      <span class="diagram__node__label">QAAgent</span>
+      <ul>
+        <li>pytest 실행</li>
+        <li>coverage 측정</li>
+        <li>LLM 코드 리뷰</li>
+        <li>피드백 판정</li>
+      </ul>
+    </div>
+    <div class="diagram__branch">
+      <div class="diagram__node--green" style="padding:0.625rem 0.75rem;border-radius:0.5rem;border:1px solid rgba(34,197,94,0.25);display:flex;flex-direction:column;align-items:center;gap:0.15rem;font-size:0.8rem;font-weight:600;color:#22C55E;">
+        <span class="diagram__branch__icon">&#10003;</span>
+        <span>통과</span>
+        <span class="diagram__branch__desc">ReviewerAgent</span>
+      </div>
+      <div class="diagram__node--red" style="padding:0.625rem 0.75rem;border-radius:0.5rem;border:1px solid rgba(239,68,68,0.25);display:flex;flex-direction:column;align-items:center;gap:0.15rem;font-size:0.8rem;font-weight:600;color:#EF4444;">
+        <span class="diagram__branch__icon">&#10007;</span>
+        <span>실패</span>
+        <span class="diagram__branch__desc">CoderAgent (재시도)</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 ## 구현 요구사항
 

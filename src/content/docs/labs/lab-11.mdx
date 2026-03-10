@@ -4,12 +4,12 @@ description: OpenTelemetry 통합, Prometheus+Grafana 설정, 메트릭 수집
 week: 13
 difficulty: 고급
 estimated_time: 6시간
-assignment_due: "2026-05-27"
+assignment_due: "2026-05-26"
 ---
 
 import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
-<Badge text="고급" variant="danger" /> <Badge text="마감: 2026-05-27" variant="note" />
+<Badge text="고급" variant="danger" /> <Badge text="마감: 2026-05-26" variant="note" />
 
 ## 목표
 
@@ -19,16 +19,34 @@ import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 
 ## 모니터링 아키텍처
 
-```
-에이전트 코드
-    │  OpenTelemetry SDK
-    ▼
-OTel Collector ──traces──▶ Jaeger (분산 추적)
-    │
-    ├──metrics──▶ Prometheus ──▶ Grafana (대시보드)
-    │
-    └──logs────▶ Loki       ──▶ Grafana (로그)
-```
+<div class="diagram">
+  <div class="diagram__title">OBSERVABILITY ARCHITECTURE</div>
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--blue">
+      <span class="diagram__node__label">에이전트 코드</span>
+      <span class="diagram__node__sub">OpenTelemetry SDK</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--purple">
+      <span class="diagram__node__label">OTel Collector</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__cols diagram__cols--3" style="max-width:28rem;">
+      <div class="diagram__node diagram__node--cyan diagram__node--full">
+        <span class="diagram__node__label" style="font-size:0.8rem;">traces</span>
+        <span class="diagram__node__sub">Jaeger (분산 추적)</span>
+      </div>
+      <div class="diagram__node diagram__node--orange diagram__node--full">
+        <span class="diagram__node__label" style="font-size:0.8rem;">metrics</span>
+        <span class="diagram__node__sub">Prometheus &#x2192; Grafana</span>
+      </div>
+      <div class="diagram__node diagram__node--green diagram__node--full">
+        <span class="diagram__node__label" style="font-size:0.8rem;">logs</span>
+        <span class="diagram__node__sub">Loki &#x2192; Grafana</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 ## 구현 요구사항
 

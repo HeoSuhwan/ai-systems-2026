@@ -4,7 +4,7 @@ description: 장기 실행 에이전트의 컨텍스트 창 관리 전략 — Co
 week: 5
 phase: 2
 phase_title: 하네스 엔지니어링
-date: "2026-04-01"
+date: "2026-03-31"
 theory_topics:
   - Context Rot 현상과 원인
   - 결정론적 컨텍스트 할당 전략
@@ -13,7 +13,7 @@ lab_topics:
   - 컨텍스트 창 사용량 측정
   - 상태 추적 시스템 구현
 assignment: "Lab 05: 컨텍스트 관리 실습"
-assignment_due: "2026-04-08"
+assignment_due: "2026-04-07"
 difficulty: 중급
 estimated_time: 5시간
 ---
@@ -32,16 +32,18 @@ import { Aside, Steps, Badge, Card, CardGrid } from '@astrojs/starlight/componen
 
 에이전트가 장시간 실행되면서 컨텍스트 창이 점점 오염되는 현상이다:
 
-```
-초기 상태 (Clean Context):
-[시스템 프롬프트] [태스크 명세] [현재 코드]
-
-30번의 시도 후 (Context Rot):
-[시스템 프롬프트] [태스크 명세] [실패한 시도 #1]
-[에러 로그 #1] [실패한 시도 #2] [에러 로그 #2]
-... (128k 토큰까지 쌓임) ...
-→ 환각 발생, 추론 품질 급락
-```
+<div class="diagram">
+  <div class="diagram__compare">
+    <div class="diagram__node--green" style="padding:0.875rem 1rem;border-radius:0.625rem;border:1px solid rgba(34,197,94,0.25);">
+      <span class="diagram__compare__label" style="color:#22C55E;">Clean Context (초기)</span>
+      <span class="diagram__node__sub">[시스템 프롬프트] [태스크 명세] [현재 코드]</span>
+    </div>
+    <div class="diagram__node--red" style="padding:0.875rem 1rem;border-radius:0.625rem;border:1px solid rgba(239,68,68,0.25);">
+      <span class="diagram__compare__label" style="color:#EF4444;">Context Rot (30회 시도 후)</span>
+      <span class="diagram__node__sub">[시스템 프롬프트] [태스크 명세] [실패 #1] [에러 #1] [실패 #2] [에러 #2] ... 128K 토큰 &#x2192; 환각 발생, 추론 품질 급락</span>
+    </div>
+  </div>
+</div>
 
 <Aside type="danger" title="Context Rot 증상">
 - 이전에 작동했던 함수를 "존재하지 않는다"고 주장
@@ -86,18 +88,29 @@ class RalphContextManager:
 
 ### 상태 추적 파일 설계 패턴
 
-```
-claude-progress.txt  ← 완료/실패 태스크 기록
-fix_plan.md         ← 구조화된 태스크 큐
-@codebase_map.md    ← 파일 구조 스냅샷 (최신 유지)
-```
+<div class="diagram">
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--cyan diagram__node--wide">
+      <span class="diagram__node__label">claude-progress.txt</span>
+      <span class="diagram__node__sub">완료/실패 태스크 기록</span>
+    </div>
+    <div class="diagram__node diagram__node--blue diagram__node--wide">
+      <span class="diagram__node__label">fix_plan.md</span>
+      <span class="diagram__node__sub">구조화된 태스크 큐</span>
+    </div>
+    <div class="diagram__node diagram__node--purple diagram__node--wide">
+      <span class="diagram__node__label">@codebase_map.md</span>
+      <span class="diagram__node__sub">파일 구조 스냅샷 (최신 유지)</span>
+    </div>
+  </div>
+</div>
 
 **`fix_plan.md` 템플릿**:
 ```markdown
 # 프로젝트: Calculator App
 ## 완료된 태스크
-- [x] 기본 파일 구조 생성 (2026-04-01 14:23)
-- [x] add() 함수 구현 및 테스트 통과 (2026-04-01 14:45)
+- [x] 기본 파일 구조 생성 (2026-03-31 14:23)
+- [x] add() 함수 구현 및 테스트 통과 (2026-03-31 14:45)
 
 ## 현재 태스크
 - [ ] subtract() 함수 구현
@@ -141,7 +154,7 @@ fix_plan.md         ← 구조화된 태스크 큐
 
 ### Lab 05: 컨텍스트 관리 실습
 
-**제출 마감**: 2026-04-08 23:59
+**제출 마감**: 2026-04-07 23:59
 
 **요구사항**:
 1. 토큰 카운터 통합된 Ralph 루프 (`ralph_with_context.sh`)

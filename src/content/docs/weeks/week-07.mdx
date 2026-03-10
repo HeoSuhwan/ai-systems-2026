@@ -4,7 +4,7 @@ description: 전통적 소프트웨어 개발 생애주기와 에이전틱 SDLC 
 week: 7
 phase: 3
 phase_title: 멀티에이전트 SDLC
-date: "2026-04-15"
+date: "2026-04-14"
 theory_topics:
   - 전통적 SDLC vs 에이전틱 SDLC
   - 에이전트 역할 분담 설계
@@ -13,7 +13,7 @@ lab_topics:
   - 멀티에이전트 파이프라인 설계
   - 에이전트 간 아티팩트 전달
 assignment: "Lab 07: 멀티에이전트 파이프라인 설계"
-assignment_due: "2026-04-22"
+assignment_due: "2026-04-21"
 difficulty: 고급
 estimated_time: 7시간
 ---
@@ -40,38 +40,47 @@ import { Aside, Steps, Badge, Card, CardGrid } from '@astrojs/starlight/componen
 
 ### 멀티에이전트 파이프라인 아키텍처
 
-```
-Human (HIC) → 요구사항 입력
-      ↓
-[Planner Agent]
-  • 요구사항 파싱
-  • spec.md 생성
-  • 우선순위 결정
-      ↓ spec.md 전달
-[Initializer Agent]
-  • 코드베이스 분석
-  • 서브태스크 분해
-  • init.sh 생성
-      ↓ task_queue.json 전달
-[Coder Agent × N]  (Ralph Loop)
-  • 병렬 태스크 실행
-  • 로컬 테스트 통과 필수
-      ↓ PR 생성
-[QA Agent]
-  • 독립 코드 리뷰
-  • 통합 테스트 실행
-  • 회귀 검증
-      ↓ 승인/거부
-[Deploy Agent]
-  • 스테이징 배포
-  • E2E 테스트
-  • Human 최종 승인 (Hard Interrupt)
-      ↓
-프로덕션 배포
-```
+<div class="diagram">
+  <div class="diagram__title">MULTI-AGENT PIPELINE</div>
+  <div class="diagram__flow">
+    <div class="diagram__node diagram__node--purple">
+      <span class="diagram__node__label">Human (HIC)</span>
+      <span class="diagram__node__sub">요구사항 입력</span>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--blue">
+      <span class="diagram__node__label">Planner Agent</span>
+      <ul><li>요구사항 파싱</li><li>spec.md 생성</li><li>우선순위 결정</li></ul>
+    </div>
+    <div class="diagram__arrow">&#x2193;<span class="diagram__arrow--label">spec.md 전달</span></div>
+    <div class="diagram__node diagram__node--gray">
+      <span class="diagram__node__label">Initializer Agent</span>
+      <ul><li>코드베이스 분석</li><li>서브태스크 분해</li><li>init.sh 생성</li></ul>
+    </div>
+    <div class="diagram__arrow">&#x2193;<span class="diagram__arrow--label">task_queue.json 전달</span></div>
+    <div class="diagram__node diagram__node--cyan">
+      <span class="diagram__node__label">Coder Agent × N (Ralph Loop)</span>
+      <ul><li>병렬 태스크 실행</li><li>로컬 테스트 통과 필수</li></ul>
+    </div>
+    <div class="diagram__arrow">&#x2193;<span class="diagram__arrow--label">PR 생성</span></div>
+    <div class="diagram__node diagram__node--orange">
+      <span class="diagram__node__label">QA Agent</span>
+      <ul><li>독립 코드 리뷰</li><li>통합 테스트 실행</li><li>회귀 검증</li></ul>
+    </div>
+    <div class="diagram__arrow">&#x2193;<span class="diagram__arrow--label">승인/거부</span></div>
+    <div class="diagram__node diagram__node--red">
+      <span class="diagram__node__label">Deploy Agent</span>
+      <ul><li>스테이징 배포</li><li>E2E 테스트</li><li>Human 최종 승인 (Hard Interrupt)</li></ul>
+    </div>
+    <div class="diagram__arrow">&#x2193;</div>
+    <div class="diagram__node diagram__node--green">
+      <span class="diagram__node__label">프로덕션 배포</span>
+    </div>
+  </div>
+</div>
 
 <Aside type="caution" title="에이전트 간 통신의 황금 규칙">
-에이전트 간 통신은 반드시 **구조화된 아티팩트(Markdown, JSON)**를 통해 이루어져야 한다.
+에이전트 간 통신은 반드시 **구조화된 아티팩트** (Markdown, JSON)를 통해 이루어져야 한다.
 에이전트 A가 에이전트 B에게 직접 메시지를 보내는 방식은 비결정성을 극대화한다.
 </Aside>
 
@@ -116,7 +125,7 @@ Human (HIC) → 요구사항 입력
 
 ### Lab 07: 멀티에이전트 파이프라인 설계
 
-**제출 마감**: 2026-04-22 23:59
+**제출 마감**: 2026-04-21 23:59
 
 **요구사항**:
 1. 5단계 멀티에이전트 아키텍처 다이어그램

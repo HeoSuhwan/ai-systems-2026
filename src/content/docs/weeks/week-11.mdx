@@ -4,7 +4,7 @@ description: CUDA 최적화, PagedAttention, 배치 처리 — 프로덕션 LLM 
 week: 11
 phase: 4
 phase_title: 오픈소스 모델 & MLOps
-date: "2026-05-13"
+date: "2026-05-12"
 theory_topics:
   - PagedAttention 알고리즘
   - CUDA 메모리 최적화
@@ -13,7 +13,7 @@ lab_topics:
   - vLLM 설정 최적화
   - 멀티 모델 서빙
 assignment: "실습 병행 진행 (Lab 11 준비)"
-assignment_due: "2026-05-20"
+assignment_due: "2026-05-19"
 difficulty: 고급
 estimated_time: 6시간
 ---
@@ -32,14 +32,20 @@ import { Aside, Steps, Badge } from '@astrojs/starlight/components';
 
 전통적 LLM 추론은 KV 캐시(Key-Value Cache)를 연속된 메모리 블록으로 할당하여 심각한 메모리 낭비가 발생한다. vLLM의 **PagedAttention**은 OS의 가상 메모리 페이징 개념을 KV 캐시에 적용한다.
 
-```
-전통 방식: 최대 길이를 위한 연속 메모리 예약
-[KV캐시: 100% 예약] → 실제 사용: 30% → 낭비: 70%
-
-PagedAttention:
-[블록 1] [블록 2] [블록 3] → 필요한 만큼만 동적 할당
-메모리 낭비: ~4% (블록 단편화만)
-```
+<div class="diagram">
+  <div class="diagram__compare">
+    <div class="diagram__node--red" style="padding:0.875rem 1rem;border-radius:0.625rem;border:1px solid rgba(239,68,68,0.25);">
+      <span class="diagram__compare__label" style="color:#EF4444;">전통 방식</span>
+      <span class="diagram__node__label" style="font-size:0.85rem;">[KV캐시: 100% 예약]</span>
+      <span class="diagram__node__sub">실제 사용: 30% &#x2192; 낭비: 70%</span>
+    </div>
+    <div class="diagram__node--green" style="padding:0.875rem 1rem;border-radius:0.625rem;border:1px solid rgba(34,197,94,0.25);">
+      <span class="diagram__compare__label" style="color:#22C55E;">PagedAttention</span>
+      <span class="diagram__node__label" style="font-size:0.85rem;">[블록 1] [블록 2] [블록 3]</span>
+      <span class="diagram__node__sub">필요한 만큼만 동적 할당 &#x2192; 낭비: ~4%</span>
+    </div>
+  </div>
+</div>
 
 ### vLLM 최적화 설정
 
