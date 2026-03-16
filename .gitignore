@@ -26,3 +26,15 @@ pnpm-debug.log*
 .idea/
 *.swp
 *.swo
+
+# Build cache (symlinked out of Drive)
+.astro
+.next
+.nuxt
+.parcel-cache
+.svelte-kit
+node_modules
+
+# Claude Code
+.omc/
+.omx/
