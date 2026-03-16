@@ -40,42 +40,42 @@ lastUpdated: 2026-03-03
 
 | 주차 | 이론 | 실습 |
 |------|------|------|
-| 1주 | 코스 오리엔테이션, AI 시스템 패러다임 전환, HITL vs HOTL 비교 | 개발 환경 설정, AI 코딩 CLI 도구 설치 (Lab 01) |
-| 2주 | HOTL 거버넌스 상세, EU AI Act 컴플라이언스, Governance-as-Code | 첫 번째 에이전틱 루프 구현 (Lab 02) |
-| 3주 | MIG 기술 원리, Kubernetes 오케스트레이션, MCP(Model Context Protocol) | MCP 서버 구성 및 도구 연결 (Lab 03) |
+| [1주](/weeks/week-01/) | 코스 오리엔테이션, AI 시스템 패러다임 전환, HITL vs HOTL 비교 | 개발 환경 설정, AI 코딩 CLI 도구 설치 (Lab 01) |
+| [2주](/weeks/week-02/) | HOTL 거버넌스 상세, EU AI Act 컴플라이언스, Governance-as-Code | 첫 번째 에이전틱 루프 구현 (Lab 02) |
+| [3주](/weeks/week-03/) | MCP 아키텍처 심층 분석, TBAC/거버넌스 게이트웨이, MIG 컴퓨팅 격리 | MCP 서버 구현과 보안 검증 (Lab 03) |
 
 ### Phase 2: 하네스 엔지니어링 (4–6주)
 
 | 주차 | 이론 | 실습 |
 |------|------|------|
-| 4주 | Ralph 루프 방법론, 모놀리식 아키텍처, 환경 제약 설계 | Ralph 루프 기본 구현 (Lab 04) |
-| 5주 | 컨텍스트 창 관리, Context Rot 방지, 상태 추적 파일 설계 | 컨텍스트 관리 시스템 구현 (Lab 05) |
-| 6주 | 인스트럭션 튜닝, "Sign" 메타포, 영구 컨텍스트 페이로드 설계 | PROMPT.md 튜닝 실습 (Lab 06) |
+| [4주](/weeks/week-04/) | 루프 패러다임 — Test-time Compute Scaling, Ralph Loop/RLM/autoresearch | Ralph 루프 구현과 누적 학습 (Lab 04) |
+| [5주](/weeks/week-05/) | 컨텍스트 창 관리, Context Rot 방지, 상태 추적 파일 설계 | 컨텍스트 관리 시스템 구현 (Lab 05) |
+| [6주](/weeks/week-06/) | 인스트럭션 튜닝, "Sign" 메타포, 영구 컨텍스트 페이로드 설계 | PROMPT.md 튜닝 실습 (Lab 06) |
 
 ### Phase 3: 멀티에이전트 SDLC (7–9주)
 
 | 주차 | 이론 | 실습 |
 |------|------|------|
-| 7주 | 에이전트 역할 분담, 전통적 SDLC와 에이전틱 SDLC 비교 | 멀티에이전트 파이프라인 설계 (Lab 07) |
-| 8주 | 플래너 에이전트 설계, 명세서 자동 생성, 코드베이스 분석 | 플래너 에이전트 구현 (Lab 08) |
-| 9주 | QA 에이전트, 자동 테스트 파이프라인, 피드백 루프 | QA 에이전트 구현 (Lab 09) |
+| [7주](/weeks/week-07/) | 에이전트 역할 분담, 전통적 SDLC와 에이전틱 SDLC 비교 | 멀티에이전트 파이프라인 설계 (Lab 07) |
+| [8주](/weeks/week-08/) | 플래너 에이전트 설계, 명세서 자동 생성, 코드베이스 분석 | 플래너 에이전트 구현 (Lab 08) |
+| [9주](/weeks/week-09/) | QA 에이전트, 자동 테스트 파이프라인, 피드백 루프 | QA 에이전트 구현 (Lab 09) |
 
 ### Phase 4: 오픈소스 모델 & MLOps (10–12주)
 
 | 주차 | 이론 | 실습 |
 |------|------|------|
-| 10주 | DeepSeek-Coder-V2 아키텍처, 오픈소스 vs 상용 API 비교, 도구 생태계 | vLLM 배포 실습 (Lab 10) |
-| 11주 | vLLM 고처리량 추론, CUDA 최적화, MIG 슬라이스 활용 | 고처리량 추론 서버 구축 |
-| 12주 | 텔레메트리 설계, LLM-as-Judge 평가 프레임워크, 비용 최적화 | 텔레메트리 & LLM-as-Judge (Lab 11, 12) |
+| [10주](/weeks/week-10/) | DeepSeek-Coder-V2 아키텍처, 오픈소스 vs 상용 API 비교, 도구 생태계 | vLLM 배포 실습 (Lab 10) |
+| [11주](/weeks/week-11/) | vLLM 고처리량 추론, CUDA 최적화, MIG 슬라이스 활용 | 고처리량 추론 서버 구축 |
+| [12주](/weeks/week-12/) | 텔레메트리 설계, LLM-as-Judge 평가 프레임워크, 비용 최적화 | 텔레메트리 & LLM-as-Judge (Lab 11, 12) |
 
 ### Phase 5: 캡스톤 Ralphthon (13–16주)
 
 | 주차 | 내용 |
 |------|------|
-| 13주 | 팀 구성, 프로젝트 주제 선정, 시스템 아키텍처 설계 |
-| 14주 | Ralphthon 실행 — 하네스 구현, 에이전트 연동, 반복 개선 |
-| 15주 | 시스템 통합, 자동 테스트, 발표 자료 준비 |
-| 16주 | 최종 발표 및 데모, 동료 평가, 수업 정리 |
+| [13주](/weeks/week-13/) | 팀 구성, 프로젝트 주제 선정, 시스템 아키텍처 설계 |
+| [14주](/weeks/week-14/) | Ralphthon 실행 — 하네스 구현, 에이전트 연동, 반복 개선 |
+| [15주](/weeks/week-15/) | 시스템 통합, 자동 테스트, 발표 자료 준비 |
+| [16주](/weeks/week-16/) | 최종 발표 및 데모, 동료 평가, 수업 정리 |
 
 ## 평가 기준
 
@@ -92,6 +92,11 @@ lastUpdated: 2026-03-03
 - Huntley, G. (2025). *The Ralph Loop: Deterministic Agentic Engineering*
 - Anthropic. (2026). *Claude Code Documentation*
 - NVIDIA. (2025). *DGX H100 MIG Configuration Guide*
+
+### 추가 참고자료
+- Karpathy, A. (2025). *autoresearch: Automated ML Research*
+- Zhang, A. et al. (2025). *Recursive LM: Language Models that Call Themselves*
+- Snell, C. et al. (2024). *Scaling LLM Test-Time Compute Optimally*
 
 ### 온라인 자료
 - [Model Context Protocol 공식 문서](https://modelcontextprotocol.io)

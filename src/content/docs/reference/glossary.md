@@ -9,8 +9,17 @@ description: AI 시스템 2026 강의 주요 용어 정의
 
 ---
 
+**autoresearch (자율 연구 루프)**
+: Andrej Karpathy가 공개한 자율 ML 실험 루프. 에이전트가 train.py를 수정하고, 고정 시간 예산(5분) 후 val_bpb를 측정하여 개선되면 commit, 아니면 reset한다. Ralph Loop과 동일한 패턴이되 검증 조건이 테스트 통과가 아닌 메트릭 개선이다.
+
+**AI System (AI 시스템)**
+: EU AI Act(Article 3) 정의 — varying levels of autonomy로 동작하며 input으로부터 output을 추론하는 machine-based system. AI 모델(엔진)에 도구 사용, 메모리, 계획, 실행 환경, 안전 장치, 관측성을 감싼 전체 구조. 모델이 엔진이라면 AI 시스템은 자동차다.
+
 **Agentic System (에이전틱 시스템)**
 : 파일 수정, 코드 실행, API 호출 등 실제 행동을 자율적으로 수행하는 AI 시스템. 단순 텍스트 생성을 넘어 환경과 상호작용한다.
+
+**Bitter Lesson (비터 레슨)**
+: Rich Sutton(2019)이 제시한 원칙. 연산을 활용하는 일반적 방법이 도메인 지식을 활용하는 특수한 방법보다 궁극적으로 효과적이다. 사전학습 스케일링(GPT-3→GPT-4)은 "학습" 측면, test-time compute scaling(o1, DeepSeek R1)은 "탐색" 측면의 구현이다.
 
 **Backpressure (백프레셔)**
 : Ralph 루프에서 에이전트 출력이 기준에 맞지 않을 때 시스템이 자동으로 거부하고 재시도를 강제하는 메커니즘. 컴파일러, 타입 체커, 테스트 스위트가 대표적 백프레셔 구성 요소.
@@ -29,6 +38,9 @@ description: AI 시스템 2026 강의 주요 용어 정의
 
 **DGX H100**
 : NVIDIA의 엔터프라이즈급 AI 서버. 제주한라대학교 AI 실습실에 설치된 모델. H100 GPU 8개 탑재.
+
+**Elicitation (MCP 사용자 확인 요청)**
+: MCP에서 서버가 클라이언트를 통해 사용자에게 직접 확인이나 입력을 요청하는 역방향 훅. Human-in-the-loop를 프로토콜 수준에서 구현한다. 서버가 민감한 작업 전 사용자 동의를 얻거나 추가 정보를 수집할 때 사용한다.
 
 **Garbage Collection (가비지 컬렉션)**
 : Ralph 루프에서 에이전트가 생성한 잘못된 코드를 `git checkout .`으로 완전히 제거하고 저장소를 클린 상태로 복원하는 과정.
@@ -63,6 +75,9 @@ description: AI 시스템 2026 강의 주요 용어 정의
 **MCP (Model Context Protocol)**
 : 에이전트와 외부 도구(파일시스템, Git, 데이터베이스 등)를 연결하는 표준화된 프로토콜. Anthropic이 개발.
 
+**McpInject**
+: SANDWORM_MODE 공격의 핵심 모듈. 악성 MCP 서버를 설치하고 무해한 이름의 도구 3종을 등록한 뒤, 도구 설명(description)에 프롬프트 인젝션을 내장하여 AI 어시스턴트가 .ssh/id_rsa, .aws/credentials 등을 자율적으로 수집하도록 조종한다. 메모리 취약점이 아닌 AI의 언어 이해력을 악용하는 의미론적 공격.
+
 **MIG (Multi-Instance GPU)**
 : NVIDIA GPU를 독립적인 인스턴스로 분할하는 기술. H100에서 최대 7개 인스턴스 생성 가능. 하드웨어 수준 격리 제공.
 
@@ -71,6 +86,9 @@ description: AI 시스템 2026 강의 주요 용어 정의
 
 **MoE (Mixture of Experts)**
 : LLM 아키텍처 중 하나. 전체 파라미터 중 일부만 활성화하여 추론 효율성을 높임. Qwen3-Coder, DeepSeek V3, MiniMax M2.1 등에 적용.
+
+**OBO (On-Behalf-Of)**
+: MCP 서버가 서비스 계정 대신 위임된 사용자/에이전트 ID로 작업하는 인증 패턴. OAuth 2.1 토큰 교환을 통해 "누구를 대신하여" 작업하는지 명시하여, 에이전트 환경에서 발생하는 책임 단절(accountability breakdown) 문제를 해결한다.
 
 **Qwen3-Coder**
 : Alibaba의 235B MoE 코딩 특화 모델 (22B 활성, 128K 컨텍스트). SWE-bench에서 상용 모델에 근접하는 성능. Apache 2.0 라이선스.
@@ -87,6 +105,9 @@ description: AI 시스템 2026 강의 주요 용어 정의
 **AI 코딩 CLI (AI Coding CLI)**
 : 터미널에서 AI 에이전트를 실행하는 명령줄 도구의 총칭. Claude Code, Gemini CLI, Codex CLI, OpenCode 등이 해당. 헤드리스 모드로 Ralph 루프에서 자동화 가능.
 
+**RLM (Recursive Language Model, 재귀적 언어 모델)**
+: 모델이 자기 자신을 재귀 호출하여 장문 문서를 처리하는 기법. 긴 프롬프트를 Python REPL 변수에 올리고, 모델이 코드를 짜서 필요한 부분만 골라 자기 자신을 재귀 호출한다. context window를 키우는 대신 모델이 맥락 탐색 전략을 스스로 결정한다.
+
 **Ralph Loop (Ralph 루프)**
 : Geoffrey Huntley가 2025년 대중화한 에이전틱 개발 방법론. `while :; do cat PROMPT.md | <ai-coding-cli>; done` 형태의 단순 지속 루프. `<ai-coding-cli>`에는 `claude`, `gemini`, `codex` 등을 사용할 수 있다.
 
@@ -96,11 +117,26 @@ description: AI 시스템 2026 강의 주요 용어 정의
 **Ralphthon**
 : Ralph 루프 방법론을 중심으로 한 해커톤 형식의 집중 개발 이벤트. 이 강의 캡스톤 프로젝트의 이름.
 
+**Sampling (MCP 서버 주도 추론 요청)**
+: MCP에서 서버가 클라이언트의 LLM에 추론을 요청하는 역방향 훅. 서버는 자체 모델 API 키 없이도 호스트의 LLM 지능을 활용할 수 있다. Human-on-the-Loop 원칙에 따라 사용자 승인이 필수이며, 클라이언트가 모델 선택과 토큰 제한을 제어한다.
+
 **SDLC (Software Development Lifecycle)**
 : 소프트웨어 개발 생애주기. 요구사항 분석 → 설계 → 구현 → 테스트 → 배포 → 유지보수.
 
+**Software 3.0 (소프트웨어 3.0)**
+: Andrej Karpathy가 제안한 개념. 프로그래머가 코드를 직접 작성하는 대신 AI 에이전트를 지휘(conduct)하는 패러다임. Software 1.0(수동 코딩), Software 2.0(신경망 학습), Software 3.0(에이전트 오케스트레이션)으로 진화한다.
+
+**TBAC (Task-Based Access Control)**
+: 에이전트의 작업 목적 단위로 도구 접근을 제어하는 패러다임. Tasks → Tools → Transactions 3계층으로 구성된다. RBAC/ABAC의 "누가"보다 "어떤 작업"이 중요한 에이전트 환경에 적합하다. 변수 치환 엔진이 `mcp.*`, `jwt.*` 네임스페이스를 지원하여 동적 정책 평가가 가능하다.
+
+**Test-Time Compute Scaling (추론 시점 연산 확장)**
+: 모델 크기를 키우지 않고 추론 시점에 연산을 더 투입하여 성능을 높이는 전략. OpenAI o1이 검증. Ralph Loop, RLM, autoresearch는 모두 이 원리의 구체적 실현으로, 같은 모델을 반복 호출하되 결정론적 검증으로 결과를 필터링한다.
+
 **Telemetry (텔레메트리)**
 : 실행 중인 시스템의 성능 지표(메트릭), 로그, 추적(트레이스) 데이터를 실시간으로 수집하는 기술.
+
+**Triple Gate Pattern (3중 게이트 패턴)**
+: AI Gateway → MCP Gateway → API Gateway의 3중 방어 아키텍처. 1차 AI 게이트웨이가 프롬프트 인젝션/PII를 필터링하고, 2차 MCP 게이트웨이가 TBAC 인가를 수행하며, 3차 API 게이트웨이가 rate limiting을 적용한다. 각 게이트가 독립적 관심사를 담당하여 단일 장애점을 방지한다.
 
 **vLLM**
 : 오픈소스 고처리량 LLM 추론 라이브러리. PagedAttention 알고리즘으로 GPU 메모리 효율성을 극대화.

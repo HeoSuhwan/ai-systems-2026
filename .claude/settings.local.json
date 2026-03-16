@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which pandoc:*)",
+      "Bash(cd:*)",
+      "Bash(mkdir:*)"
+    ]
+  }
+}
