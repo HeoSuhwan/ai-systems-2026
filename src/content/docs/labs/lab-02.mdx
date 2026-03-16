@@ -1,6 +1,6 @@
 ---
 title: "Lab 02: 첫 번째 AI 코딩 에이전트"
-description: HOTL 거버넌스가 적용된 에이전트 구현 — 감사 로그와 Hard Interrupt
+description: HOTL 거버넌스가 적용된 에이전트 구현 — 4단계 위험 분류, JSON Lines 감사 로그, 정책 테스트
 week: 2
 difficulty: 초급
 estimated_time: 4시간
@@ -14,8 +14,9 @@ import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 ## 목표
 
 - `anthropic` Python SDK를 사용한 첫 번째 에이전트 구현
-- HOTL 거버넌스 레이어 (ActionRisk, Hard Interrupt) 구현
-- 감사 로그 시스템 구축
+- 4단계 위험 분류(`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`)가 있는 HOTL 거버넌스 레이어 구현
+- JSON Lines 형식의 구조화된 감사 로그 시스템 구축
+- 정책 테스트로 거버넌스 로직 검증
 
 ## 환경 설정
 
@@ -23,7 +24,7 @@ import { Steps, Aside, Badge } from '@astrojs/starlight/components';
 mkdir lab-02 && cd lab-02
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install anthropic python-dotenv
+pip install anthropic python-dotenv pytest
 ```
 
 ## 구현 요구사항
@@ -32,34 +33,57 @@ pip install anthropic python-dotenv
 
 ```python
 from enum import Enum
-import logging
-from datetime import datetime
+import json
+import sys
+from datetime import datetime, timezone
 
-logging.basicConfig(
-    filename='audit.log',
-    level=logging.INFO,
-    format='%(asctime)s | %(levelname)s | %(message)s'
-)
 
 class ActionRisk(Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
+    CRITICAL = "critical"
 
-def log_action(action: str, risk: ActionRisk, approved: bool):
-    logging.info(f"ACTION={action[:50]} | RISK={risk.value} | APPROVED={approved}")
+
+def log_action(action: str, risk: ActionRisk, approved: bool,
+               reason: str = "") -> dict:
+    """JSON Lines 형식으로 감사 로그를 기록한다."""
+    entry = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "action": action[:100],
+        "risk": risk.value,
+        "approved": approved,
+        "reason": reason,
+    }
+    with open("audit.jsonl", "a") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    return entry
+
 
 def require_human_approval(action: str) -> bool:
+    """HIGH 위험 액션에 대해 사용자 승인을 요청한다."""
     print(f"\n⚠️  HIGH RISK ACTION 감지:\n{action}\n")
     response = input("승인하시겠습니까? (yes/no): ")
     return response.lower() == "yes"
 
+
 def governance_check(action: str, risk: ActionRisk) -> bool:
+    """위험 수준에 따라 액션을 허용/거부한다."""
+    # CRITICAL: 무조건 거부
+    if risk == ActionRisk.CRITICAL:
+        log_action(action, risk, False, reason="CRITICAL 자동 거부")
+        print(f"\n🚫 CRITICAL ACTION 자동 거부: {action[:50]}")
+        return False
+
+    # HIGH: 인간 승인 필요
     if risk == ActionRisk.HIGH:
         approved = require_human_approval(action)
-        log_action(action, risk, approved)
+        log_action(action, risk, approved,
+                   reason="인간 승인" if approved else "인간 거부")
         return approved
-    log_action(action, risk, True)
+
+    # LOW, MEDIUM: 자동 승인
+    log_action(action, risk, True, reason="자동 승인")
     return True
 ```
 
@@ -67,19 +91,74 @@ def governance_check(action: str, risk: ActionRisk) -> bool:
 
 거버넌스 레이어를 통합한 Claude API 호출 에이전트를 구현한다.
 
+### 3. `test_governance.py` — 정책 테스트
+
+```python
+# test_governance.py
+import json
+from pathlib import Path
+from governance import ActionRisk, governance_check, log_action
+
+AUDIT_FILE = "audit.jsonl"
+
+
+def setup_function():
+    """각 테스트 전 감사 로그 초기화."""
+    Path(AUDIT_FILE).unlink(missing_ok=True)
+
+
+def test_critical_always_denied():
+    """CRITICAL 위험은 항상 거부되어야 한다."""
+    result = governance_check("rm -rf /", ActionRisk.CRITICAL)
+    assert result is False
+    logs = Path(AUDIT_FILE).read_text().strip().split("\n")
+    entry = json.loads(logs[-1])
+    assert entry["approved"] is False
+    assert entry["risk"] == "critical"
+
+
+def test_low_auto_approved():
+    """LOW 위험은 자동 승인되어야 한다."""
+    result = governance_check("파일 읽기", ActionRisk.LOW)
+    assert result is True
+    logs = Path(AUDIT_FILE).read_text().strip().split("\n")
+    entry = json.loads(logs[-1])
+    assert entry["approved"] is True
+
+
+def test_audit_log_is_jsonl():
+    """감사 로그가 유효한 JSON Lines 형식이어야 한다."""
+    log_action("test action", ActionRisk.LOW, True)
+    log_action("test action 2", ActionRisk.MEDIUM, True)
+    logs = Path(AUDIT_FILE).read_text().strip().split("\n")
+    assert len(logs) == 2
+    for line in logs:
+        entry = json.loads(line)  # 파싱 실패 시 테스트 실패
+        assert "timestamp" in entry
+        assert "action" in entry
+        assert "risk" in entry
+```
+
+<Steps>
+1. 코드 구현 (`governance.py`, `agent.py`)
+2. `python agent.py`로 실행 테스트
+3. HIGH risk 액션 실행 시 Hard Interrupt 동작 확인
+4. CRITICAL risk 액션이 자동 거부되는지 확인
+5. `pytest test_governance.py -v`로 정책 테스트 통과 확인
+6. `audit.jsonl` 내용이 유효한 JSON Lines인지 확인
+7. PR 제출
+</Steps>
+
 ## 제출물
 
 `assignments/lab-02/[학번]/`에 PR:
 
-- [ ] `governance.py`
-- [ ] `agent.py`
-- [ ] `audit.log` 예시 (최소 5개 액션 기록)
+- [ ] `governance.py` — 4단계 위험 분류 + JSON Lines 로깅
+- [ ] `agent.py` — 거버넌스 통합 에이전트
+- [ ] `test_governance.py` — 정책 테스트 (최소 3개)
+- [ ] `audit.jsonl` 예시 — 최소 5개 액션 기록 (유효한 JSON Lines)
 - [ ] `README.md` — 설계 결정 및 테스트 결과
 
-<Steps>
-1. 코드 구현
-2. `python agent.py`로 실행 테스트
-3. HIGH risk 액션 실행 시 Hard Interrupt 동작 확인
-4. `audit.log` 생성 확인
-5. PR 제출
-</Steps>
+<Aside type="caution" title="보안 고려">
+`audit.jsonl`에 API 키나 개인정보가 기록되지 않도록 `action` 필드를 100자로 제한하고, 민감 데이터는 마스킹한다.
+</Aside>

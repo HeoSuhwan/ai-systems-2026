@@ -1,6 +1,6 @@
 ---
-title: "Lab 03: MCP 서버 구성"
-description: MCP 서버 설정, 파일시스템+Git 서버 구성, 커스텀 MCP 도구 구현
+title: "Lab 03: MCP 서버 구현"
+description: FastMCP로 Tool + Resource + Prompt 3대 프리미티브 서버 구현, MCP Inspector 검증, 보안 강화
 week: 3
 difficulty: 초급
 estimated_time: 5시간
@@ -13,13 +13,14 @@ import { Steps, Aside, Tabs, TabItem, Badge } from '@astrojs/starlight/component
 
 ## 목표
 
-- MCP(Model Context Protocol) 개념 이해 및 서버 설정
-- 파일시스템 MCP 서버와 Git MCP 서버 동시 구성
-- 커스텀 MCP 도구(tool) 직접 구현
+- FastMCP로 MCP 서버 구현 (Tool + Resource + Prompt 3대 프리미티브)
+- MCP Inspector로 서버 검증
+- 입력 검증과 경로 순회 방어 적용
+- 파일시스템 + Git MCP 서버 구성
 
 ## MCP 개요
 
-MCP는 AI 코딩 에이전트가 외부 도구·데이터 소스와 표준화된 방식으로 통신하는 프로토콜이다. MCP를 지원하는 CLI 도구는 설정 파일에 MCP 서버를 등록하여 사용한다.
+MCP는 AI 코딩 에이전트가 외부 도구·데이터 소스와 표준화된 방식으로 통신하는 프로토콜이다. 3대 프리미티브 — **Tool**(모델이 호출), **Resource**(앱이 제어), **Prompt**(사용자가 선택) — 를 통해 기능을 노출한다.
 
 <div class="diagram">
   <div class="diagram__chain">
@@ -32,7 +33,7 @@ MCP는 AI 코딩 에이전트가 외부 도구·데이터 소스와 표준화된
     </div>
     <div class="diagram__arrow">&#x2193;</div>
     <div class="diagram__node diagram__node--cyan">
-      <span class="diagram__node__label">MCP 서버</span>
+      <span class="diagram__node__label">MCP 서버 (Tool + Resource + Prompt)</span>
     </div>
     <div class="diagram__arrow">&#x2193;</div>
     <div class="diagram__node diagram__node--orange">
@@ -52,7 +53,7 @@ MCP는 AI 코딩 에이전트가 외부 도구·데이터 소스와 표준화된
 
 ### 1. MCP 서버 설정 — `settings.json`
 
-AI 코딩 CLI의 설정 파일에 두 개의 내장 서버를 추가한다.
+AI 코딩 CLI의 설정 파일에 내장 서버를 추가한다.
 
 <Tabs>
   <TabItem label="Claude Code">
@@ -91,10 +92,31 @@ AI 코딩 CLI의 설정 파일에 두 개의 내장 서버를 추가한다.
 `filesystem` 서버에 등록한 경로 외부의 파일은 에이전트가 접근할 수 없다. 실습 디렉터리를 정확히 지정할 것.
 </Aside>
 
-### 2. 서버 동작 확인
+### 2. 환경 설정 및 서버 동작 확인
 
 <Steps>
-1. **서버 목록 확인**
+1. **프로젝트 구조 및 환경 설정**
+
+   ```bash
+   mkdir -p lab-03-mcp && cd lab-03-mcp
+   python -m venv .venv
+   source .venv/bin/activate
+
+   # uv 사용 시 (권장)
+   uv add "mcp[cli]" fastmcp
+
+   # pip 사용 시
+   pip install fastmcp
+   ```
+
+   ```
+   lab-03-mcp/
+   ├── custom_server.py       # FastMCP 서버 (Tool + Resource + Prompt)
+   ├── settings.json           # MCP 설정
+   └── test_sample.py          # custom 서버의 run_pytest로 실행할 테스트
+   ```
+
+2. **내장 서버 목록 확인**
 
    ```bash
    claude mcp list
@@ -102,14 +124,14 @@ AI 코딩 CLI의 설정 파일에 두 개의 내장 서버를 추가한다.
    # git         npx -y @modelcontextprotocol/server-git ...
    ```
 
-2. **파일시스템 서버 테스트**
+3. **파일시스템 서버 테스트**
 
    ```bash
    claude "현재 디렉터리의 파일 목록을 보여줘."
    # filesystem 서버의 list_directory 도구가 호출되어야 함
    ```
 
-3. **Git 서버 테스트**
+4. **Git 서버 테스트**
 
    ```bash
    git init /home/[학번]/lab-03
@@ -119,82 +141,129 @@ AI 코딩 CLI의 설정 파일에 두 개의 내장 서버를 추가한다.
 
 ### 3. 커스텀 MCP 서버 — `custom_server.py`
 
-Python으로 간단한 MCP 서버를 직접 구현한다. `mcp` 패키지를 사용한다.
-
-```bash
-pip install mcp
-```
+FastMCP로 **3대 프리미티브**(Tool + Resource + Prompt)를 모두 포함하는 서버를 구현한다.
 
 ```python
 # custom_server.py
-from mcp.server import Server
-from mcp.server.stdio import stdio_server
-from mcp.types import Tool, TextContent
-import json
+import os
 import subprocess
+import sys
+from fastmcp import FastMCP
 
-app = Server("lab03-custom")
+mcp = FastMCP("lab03-custom", description="Lab 03 실습 서버")
 
-@app.list_tools()
-async def list_tools() -> list[Tool]:
-    return [
-        Tool(
-            name="run_pytest",
-            description="지정한 디렉터리에서 pytest를 실행하고 결과를 반환한다.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "path": {
-                        "type": "string",
-                        "description": "pytest를 실행할 디렉터리 경로"
-                    }
-                },
-                "required": ["path"]
-            }
-        ),
-        Tool(
-            name="count_lines",
-            description="파일의 라인 수를 반환한다.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "file_path": {
-                        "type": "string",
-                        "description": "라인을 셀 파일의 경로"
-                    }
-                },
-                "required": ["file_path"]
-            }
+# === 허용 경로 설정 (경로 순회 방어) ===
+ALLOWED_BASE = os.path.realpath(os.path.dirname(__file__))
+
+
+def _validate_path(path: str) -> str:
+    """경로 순회 공격을 방어한다. 허용된 디렉터리 외부 접근을 차단."""
+    real_path = os.path.realpath(path)
+    if not real_path.startswith(ALLOWED_BASE):
+        raise ValueError(
+            f"접근 거부: {path} — 허용 범위({ALLOWED_BASE}) 외부"
         )
-    ]
+    return real_path
 
-@app.call_tool()
-async def call_tool(name: str, arguments: dict) -> list[TextContent]:
-    if name == "run_pytest":
+
+# === Tool 1: pytest 실행 ===
+@mcp.tool()
+def run_pytest(path: str) -> str:
+    """지정한 디렉터리에서 pytest를 실행하고 결과를 반환한다.
+
+    Args:
+        path: pytest를 실행할 디렉터리 경로
+    """
+    safe_path = _validate_path(path)
+    try:
         result = subprocess.run(
-            ["python", "-m", "pytest", arguments["path"], "-v", "--tb=short"],
+            ["python", "-m", "pytest", safe_path, "-v", "--tb=short"],
             capture_output=True,
             text=True,
-            timeout=60
+            timeout=60,
         )
-        output = result.stdout + result.stderr
-        return [TextContent(type="text", text=output)]
+        return result.stdout + result.stderr
+    except subprocess.TimeoutExpired:
+        return "ERROR: pytest 실행 시간 초과 (60초)"
+    except Exception as e:
+        print(f"[ERROR] {e}", file=sys.stderr)
+        return f"ERROR: {e}"
 
-    elif name == "count_lines":
-        with open(arguments["file_path"], "r") as f:
+
+# === Tool 2: 라인 수 카운트 ===
+@mcp.tool()
+def count_lines(file_path: str) -> str:
+    """파일의 라인 수를 반환한다.
+
+    Args:
+        file_path: 라인을 셀 파일의 경로
+    """
+    safe_path = _validate_path(file_path)
+    try:
+        with open(safe_path, "r") as f:
             lines = f.readlines()
-        return [TextContent(type="text", text=str(len(lines)))]
+        return f"{len(lines)} lines"
+    except FileNotFoundError:
+        return f"ERROR: 파일을 찾을 수 없습니다 — {file_path}"
+    except Exception as e:
+        print(f"[ERROR] {e}", file=sys.stderr)
+        return f"ERROR: {e}"
 
-    raise ValueError(f"Unknown tool: {name}")
 
-async def main():
-    async with stdio_server() as (read_stream, write_stream):
-        await app.run(read_stream, write_stream, app.create_initialization_options())
+# === Resource: 프로젝트 통계 ===
+@mcp.resource("project://stats")
+def project_stats() -> str:
+    """프로젝트 디렉터리의 파일 통계를 반환한다."""
+    py_files = []
+    for root, _dirs, files in os.walk(ALLOWED_BASE):
+        for f in files:
+            if f.endswith(".py"):
+                py_files.append(os.path.join(root, f))
+    total_lines = 0
+    for fp in py_files:
+        try:
+            with open(fp) as f:
+                total_lines += len(f.readlines())
+        except Exception:
+            pass
+    return (
+        f"Python 파일 수: {len(py_files)}\n"
+        f"총 라인 수: {total_lines}\n"
+        f"프로젝트 경로: {ALLOWED_BASE}"
+    )
+
+
+# === Prompt: 코드 리뷰 ===
+@mcp.prompt()
+def code_review(file_path: str) -> str:
+    """코드 리뷰를 요청하는 구조화된 프롬프트 템플릿.
+
+    Args:
+        file_path: 리뷰할 파일의 경로
+    """
+    return (
+        f"다음 파일을 코드 리뷰해 주세요: {file_path}\n\n"
+        f"리뷰 항목:\n"
+        f"1. 보안 취약점 (경로 순회, 명령 주입, 입력 검증)\n"
+        f"2. 에러 핸들링 (예외 처리, 안전한 실패)\n"
+        f"3. 코드 품질 (가독성, 네이밍, 구조)\n"
+        f"4. 테스트 가능성 (테스트하기 쉬운 설계인가)"
+    )
+
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    mcp.run()
 ```
+
+<Aside type="danger" title="보안: 경로 순회와 명령 주입">
+
+커스텀 MCP 서버에서 반드시 방어해야 하는 3가지 취약점:
+
+1. **경로 순회 (Path Traversal)**: `../../etc/passwd` 같은 입력으로 허용 범위 외부의 파일에 접근. `os.path.realpath`로 심볼릭 링크를 해소하고 허용 경로와 비교한다.
+2. **명령 주입 (Command Injection)**: 사용자 입력을 `shell=True`로 실행하면 임의 명령이 실행된다. 항상 리스트 형태로 인자를 전달하고 `shell=False`(기본값)을 유지한다.
+3. **도구 설명 인젝션**: 도구의 `description`에 숨겨진 지시문을 삽입하여 에이전트를 조종하는 공격. 서드파티 MCP 서버의 도구 설명을 항상 의심하라.
+
+</Aside>
 
 ### 4. 커스텀 서버 등록
 
@@ -207,16 +276,37 @@ if __name__ == "__main__":
     "git": { "...": "..." },
     "custom": {
       "command": "python",
-      "args": ["/home/[학번]/lab-03/custom_server.py"]
+      "args": ["/home/[학번]/lab-03-mcp/custom_server.py"]
     }
   }
 }
 ```
 
-커스텀 도구 동작 확인:
+### 5. MCP Inspector로 검증
 
 ```bash
-claude "lab-03 디렉터리에서 pytest를 실행해줘."
+# Inspector 실행
+npx @modelcontextprotocol/inspector python custom_server.py
+
+# 브라우저에서 http://localhost:6274 접속 후:
+# 1. tools/list → run_pytest, count_lines 확인
+# 2. resources/list → project://stats 확인
+# 3. prompts/list → code_review 확인
+# 4. tools/call → run_pytest 실행, 결과 확인
+# 5. 스크린샷 캡처 (과제 제출용)
+```
+
+<Aside type="tip" title="Inspector 검증 체크리스트">
+3대 프리미티브가 모두 등록되었는지 확인:
+- `tools/list` → 2개 이상의 도구
+- `resources/list` → 1개 이상의 리소스
+- `prompts/list` → 1개 이상의 프롬프트
+</Aside>
+
+### 6. 커스텀 도구 동작 확인
+
+```bash
+claude "lab-03-mcp 디렉터리에서 pytest를 실행해줘."
 # run_pytest 도구가 호출되어야 함
 ```
 
@@ -225,10 +315,14 @@ claude "lab-03 디렉터리에서 pytest를 실행해줘."
 `assignments/lab-03/[학번]/`에 PR:
 
 - [ ] `settings.json` — filesystem, git, custom 세 서버가 등록된 설정 파일
-- [ ] `custom_server.py` — `run_pytest`, `count_lines` 두 도구 구현
+- [ ] `custom_server.py` — FastMCP 기반, **3대 프리미티브**(Tool + Resource + Prompt) 구현
 - [ ] `test_sample.py` — custom 서버의 `run_pytest`로 실행할 테스트 파일 (최소 3개 테스트)
-- [ ] `README.md` — 각 MCP 서버의 동작 확인 결과 및 트러블슈팅 기록
+- [ ] Inspector 스크린샷 — `tools/list`, `resources/list`, `prompts/list` 확인
+- [ ] `README.md` — 각 MCP 서버의 동작 확인 결과, 보안 검증(경로 순회 차단 테스트), 트러블슈팅 기록
 
 <Aside type="caution" title="보안 고려">
-MCP 서버는 AI 코딩 에이전트에게 강력한 권한을 부여한다. 프로덕션 환경에서는 허용 경로와 실행 가능 명령을 최소한으로 제한할 것.
+MCP 서버는 AI 코딩 에이전트에게 강력한 권한을 부여한다. 반드시 다음을 확인할 것:
+- `_validate_path()`로 경로 순회가 차단되는가? (`../../etc/passwd` 입력 테스트)
+- `subprocess` 호출에 `timeout`이 설정되어 있는가?
+- 에러 로그가 **stderr**로 출력되는가? (stdout 오염 방지)
 </Aside>

@@ -129,7 +129,27 @@ import { Steps, Aside, Tabs, TabItem, Badge } from '@astrojs/starlight/component
      </TabItem>
    </Tabs>
 
-5. **DGX 서버 접속**
+5. **관찰 과제: AI의 자율적 결정 기록**
+
+   AI가 생성한 코드를 열어서 다음을 관찰하라:
+   - AI가 **스스로 결정**한 것은 무엇인가? (파일명, 함수 구조, 변수명, 주석 언어 등)
+   - 사용자가 **명시적으로 지시**한 것과 AI가 **자율적으로 결정**한 것을 구분하여 기록
+   - 이 관찰이 1주차 이론의 "AI 모델 vs AI 시스템" 구분과 어떻게 연결되는가?
+
+   ```markdown
+   # 관찰 기록 (observations.md에 작성)
+   ## 내가 지시한 것
+   - "Hello, AI Engineering 2026! 출력하는 파일"
+
+   ## AI가 자율적으로 결정한 것
+   - 파일명: ???
+   - 변수명/함수명: ???
+   - 코드 구조: ???
+   - 주석 언어: ???
+   - 기타: ???
+   ```
+
+6. **DGX 서버 접속**
 
    <Tabs>
      <TabItem label="SSH">
@@ -150,7 +170,7 @@ import { Steps, Aside, Tabs, TabItem, Badge } from '@astrojs/starlight/component
      </TabItem>
    </Tabs>
 
-6. **저장소 Fork 및 클론**
+7. **저장소 Fork 및 클론**
 
    ```bash
    # GitHub에서 Fork 후
@@ -165,9 +185,14 @@ import { Steps, Aside, Tabs, TabItem, Badge } from '@astrojs/starlight/component
 
 `assignments/lab-01/[학번]/` 폴더에 다음 파일을 포함한 PR:
 
-- [ ] `README.md` — 설치 과정 및 트러블슈팅 기록
+- [ ] `README.md` — 설치 과정 및 트러블슈팅 기록 + AI 시스템 분석 보고서 (300자) 포함
 - [ ] `hello.py` — AI 코딩 CLI로 생성된 Python 파일
+- [ ] `observations.md` — AI의 자율적 결정 관찰 기록
 - [ ] `screenshots/` — 설치 완료 및 DGX 접속 스크린샷 (2장 이상)
+
+**가산점 요소**:
+1. SWE-bench Verified 리더보드에서 상위 5개 시스템을 비교하고, 모델 크기와 성능의 상관관계를 분석
+2. EU AI Act Article 14의 인간 감독 요구사항을 우리 수업 환경에 적용하는 방안 제시
 
 <Aside type="tip" title="트러블슈팅">
 - API 키 오류: 환경변수가 제대로 설정됐는지 `echo $ANTHROPIC_API_KEY`로 확인
