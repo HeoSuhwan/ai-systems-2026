@@ -92,7 +92,7 @@ Hello! 이 디렉토리에 간단한 Python hello world 파일을 만들어줘.
 파일 경로:
 
 ```
-C:/Users/suhwan-l/test-project/hello.py
+.../test-project/hello.py
 ```
 
 파일 내용:
