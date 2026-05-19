@@ -1,0 +1,11 @@
+[# Sample progress log created for Lab 05 context management assignment]
+[2026-05-17T10:00:00] iter=1 status=running
+  Notes: 첫 번째 턴 – 토큰 카운터 구현 테스트.
+[2026-05-17T10:05:00] iter=2 status=running
+  Notes: 롤링 컨텍스트 압축 논리 추가.
+[2026-05-17T10:10:00] iter=3 status=running
+  Notes: state_tracker 저장 및 복원 동작 검증.
+[2026-05-17T10:15:00] iter=4 status=running
+  Notes: context rot 시뮬레이션 데이터 생성.
+[2026-05-17T10:20:00] iter=5 status=running
+  Notes: 결과 분석 및 README 작성.
